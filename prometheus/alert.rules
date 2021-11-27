@@ -41,30 +41,93 @@ groups:
 
 - name: containers
   rules:
-  - alert: jenkins_down
-    expr: absent(container_memory_usage_bytes{name="jenkins"})
+  - alert: amigo_down
+    expr: absent_over_time(container_tasks_state{name="amigo-platform", state="running"}[20s])
     for: 30s
     labels:
       severity: critical
     annotations:
-      summary: "Jenkins down"
-      description: "Jenkins container is down for more than 30 seconds."
+      summary: "Amigo-DEV down"
+      description: "amigo_platform container is down for more than 30 seconds."
 
-  - alert: jenkins_high_cpu
-    expr: sum(rate(container_cpu_usage_seconds_total{name="jenkins"}[1m])) / count(node_cpu_seconds_total{mode="system"}) * 100 > 10
+  - alert: postgres_down
+    expr: absent_over_time(container_tasks_state{name="postgres", state="running"}[20s])
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      summary: "Postgres down"
+      description: "Postgres container is down for more than 30 seconds."
+
+  - alert: jitsi_web_down
+    expr: absent_over_time(container_tasks_state{name="jitsimeet_web_1", state="running"}[20s])
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      summary: "Jitsi-web down"
+      description: "Jitsi-web container is down for more than 30 seconds."
+
+  - alert: jitsi_jicofo_down
+    expr: absent_over_time(container_tasks_state{name="jitsimeet_jicofo_1", state="running"}[20s])
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      summary: "Jitsi-jicofo down"
+      description: "Jitsi-jicofo container is down for more than 30 seconds."
+
+  - alert: jitsi_jvb_down
+    expr: absent_over_time(container_tasks_state{name="jitsimeet_jvb_1", state="running"}[20s])
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      summary: "Jitsi-jvb down"
+      description: "Jitsi-jvb container is down for more than 30 seconds."
+
+  - alert: jitsi_prosody_down
+    expr: absent_over_time(container_tasks_state{name="jitsimeet_prosody_1", state="running"}[20s])
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      summary: "Jitsi-prosody down"
+      description: "Jitsi-prosody container is down for more than 30 seconds."
+
+  - alert: amigo_high_cpu
+    expr: sum(rate(container_cpu_usage_seconds_total{name="amigo_platform"}[1m])) / count(node_cpu_seconds_total{mode="system"}) * 100 > 20
     for: 30s
     labels:
       severity: warning
     annotations:
-      summary: "Jenkins high CPU usage"
-      description: "Jenkins CPU usage is {{ humanize $value}}%."
+      summary: "Amigo-DEV high CPU usage"
+      description: "amigo_platform CPU usage is {{ humanize $value}}%."
 
-  - alert: jenkins_high_memory
-    expr: sum(container_memory_usage_bytes{name="jenkins"}) > 1200000000
+  - alert: amigo_high_memory
+    expr: sum(container_memory_usage_bytes{name="amigo_platform"}) > 1200000000
     for: 30s
     labels:
       severity: warning
     annotations:
-      summary: "Jenkins high memory usage"
-      description: "Jenkins memory consumption is at {{ humanize $value}}."
+      summary: "Amigo-DEV high memory usage"
+      description: "amigo_platform memory consumption is at {{ humanize $value}}."
+      
+  - alert: jitsi_high_memory
+    expr: sum(container_memory_usage_bytes{name="jitsimeet_jvb_1"}) > 1200000000
+    for: 30s
+    labels:
+      severity: warning
+    annotations:
+      summary: "jitsimeet high memory usage"
+      description: "jitsimeet_jvb_1 memory consumption is at {{ humanize $value}}."
+      
+  - alert: jitsi_high_cpu
+    expr: sum(rate(container_cpu_usage_seconds_total{name="jitsimeet_jvb_1"}[1m])) / count(node_cpu_seconds_total{mode="system"}) * 100 > 15
+    for: 30s
+    labels:
+      severity: warning
+    annotations:
+      summary: "Amigo-DEV high CPU usage"
+      description: "jitsimeet_jvb_1 CPU usage is {{ humanize $value}}%."
 
